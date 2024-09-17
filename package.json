@@ -13,7 +13,8 @@
     "framer-motion": "^11.3.21",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.11"
+    "next": "14.2.11",
+    "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
     "typescript": "^5",
