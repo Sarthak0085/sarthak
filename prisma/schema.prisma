@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  email     String     @unique
+  password  String
+  portfolio Portfolio? @relation(fields: [id], references: [userId])
+}
+
+model Portfolio {
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String       @unique @db.ObjectId
+  hero       Hero         @relation("PortfolioHeroSection", fields: [userId], references: [id], onDelete: Cascade)
+  about      AboutSection @relation("PortfolioAboutSection", fields: [userId], references: [id], onDelete: Cascade)
+  projects   Project[]    @relation("PortfolioProjects")
+  educations Education[]  @relation("PortfolioEducations")
+  User       User[]
+}
+
+model Hero {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  portfolioId String     @db.ObjectId
+  Portfolio   Portfolio? @relation("PortfolioHeroSection")
+}
+
+model AboutSection {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  portfolioId String     @db.ObjectId
+  Portfolio   Portfolio? @relation("PortfolioAboutSection")
+  read        Read       @relation("AboutReadSection", fields: [readId], references: [id], onDelete: Cascade)
+  readId      String     @unique @db.ObjectId
+  Hobby       Hobby      @relation("HobbyAboutSections", fields: [hobbyId], references: [id], onDelete: Cascade)
+  hobbyId     String     @unique @db.ObjectId
+  Language    Language   @relation("AboutSectionLanguages", fields: [languageId], references: [id], onDelete: Cascade)
+  languageId  String     @unique @db.ObjectId
+}
+
+model Read {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  image        String
+  AboutSection AboutSection? @relation("AboutReadSection")
+}
+
+model Hobby {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String?
+  image        String?
+  AboutSection AboutSection? @relation("HobbyAboutSections")
+  hobbies      HobbyDetail[]
+}
+
+model HobbyDetail {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  hobbyId String @db.ObjectId
+  Hobby   Hobby  @relation(fields: [hobbyId], references: [id], onDelete: Cascade)
+}
+
+model Language {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  description    String
+  languages      LanguageDetail[]
+  aboutSectionId String           @db.ObjectId
+  aboutSection   AboutSection?    @relation("AboutSectionLanguages")
+}
+
+model LanguageDetail {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  svg        String
+  languageId String   @db.ObjectId
+  Language   Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+}
+
+model Education {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  institution String
+  degree      String
+  field       String
+  startDate   DateTime
+  endDate     DateTime
+  description String?
+  percentage  Float?
+  cgpa        Float?
+  liveLink    String?
+  portfolioId String     @db.ObjectId
+  portfolio   Portfolio? @relation("PortfolioEducations", fields: [portfolioId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  companyName String?
+  year        String
+  title       String
+  description String
+  liveLink    String?
+  githubLink  String?
+  image       String
+  portfolio   Portfolio? @relation("PortfolioProjects", fields: [portfolioId], references: [id])
+  portfolioId String?    @db.ObjectId
+}

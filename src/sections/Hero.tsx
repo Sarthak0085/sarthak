@@ -98,7 +98,7 @@ export const HeroSection = () => {
                     <StarIcon className="size-28 text-emerald-400" />
                 </HeroOrbit>
             </div>
-            <div className="container">
+            <div className="container z-10">
                 <div className="flex flex-col items-center">
                     <Image
                         src={memojiImage}
@@ -122,11 +122,14 @@ export const HeroSection = () => {
                     </p>
                 </div>
                 <div className="flex flex-col md:flex-row justify-center items-center mt-8 gap-4">
-                    <Link href={`#projects`} className="inline-flex items-center gap-2 border border-white/15 px-6 h-12 rounded-xl">
+                    <Link
+                        href={`#projects`}
+                        className="inline-flex z-20 items-center gap-2 border border-white/15 px-6 h-12 rounded-xl hover:bg-gradient-to-r hover:from-emerald-300 hover:to-sky-400"
+                    >
                         <span className="font-semibold cursor-pointer">Explore My Work</span>
                         <ArrowDown className="size-4 cursor-pointer" />
                     </Link>
-                    <button className="inline-flex items-center gap-2 border border-white bg-white text-gray-900 px-6 h-12 rounded-xl">
+                    <button onClick={() => console.log("clicked")} className="inline-flex z-20 items-center gap-2 border border-white bg-white text-gray-900 px-6 h-12 rounded-xl">
                         <span>👋</span>
                         <span className="font-semibold">Let&apos;s Connect</span>
                     </button>
