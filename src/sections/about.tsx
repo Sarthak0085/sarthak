@@ -1,3 +1,5 @@
+"use client";
+
 import { Card } from "@/components/card"
 import { SectionHeader } from "@/components/section-header";
 import bookImage from "@/assets/images/book-cover.png";
@@ -12,6 +14,8 @@ import mapImage from "@/assets/images/map.png";
 import smileMemoji from "@/assets/images/memoji-smile.png";
 import { CardHeader } from "@/components/card-header";
 import { ToolboxItems } from "@/components/toolbox-items";
+import { useRef } from "react";
+import { motion } from "framer-motion";
 
 const toolboxItems = [
     {
@@ -80,6 +84,7 @@ const hobbies = [
 ]
 
 export const AboutSection = () => {
+    const constraintRef = useRef(null);
     return (
         <div className="py-16 lg:py-24">
             <div className="container">
@@ -106,10 +111,12 @@ export const AboutSection = () => {
                             />
                             <ToolboxItems
                                 items={toolboxItems}
+                                itemsWrapperClassName="animate-move-left [animation-duration:30s]"
                             />
                             <ToolboxItems
                                 items={toolboxItems}
-                                itemsWrapperClassName="-translate-x-1/2"
+                                className="mt-6"
+                                itemsWrapperClassName="animate-move-right [animation-duration:20s]"
                             />
                         </Card>
                     </div>
@@ -120,19 +127,21 @@ export const AboutSection = () => {
                                 description={"Explore my interests and hobbies beyond the digital realm."}
                                 className="px-6 py-6"
                             />
-                            <div className="relative flex-1">
+                            <div className="relative flex-1" ref={constraintRef}>
                                 {hobbies?.map((hobby) => (
-                                    <div
+                                    <motion.div
                                         key={hobby?.title}
                                         className="inline-flex gap-2 items-center px-6 bg-gradient-to-r from-emerald-300 to-sky-400 rounded-full py-1.5 absolute"
                                         style={{
                                             left: hobby?.left,
                                             top: hobby?.top
                                         }}
+                                        drag
+                                        dragConstraints={constraintRef}
                                     >
                                         <span className="text-gray-950 font-medium">{hobby?.title}</span>
                                         <span>{hobby.emoji}</span>
-                                    </div>
+                                    </motion.div>
                                 ))}
                             </div>
                         </Card>
@@ -142,7 +151,9 @@ export const AboutSection = () => {
                                 alt="Map"
                                 className="h-full w-full object-cover"
                             />
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-20 rounded-full bg-gradient-to-r from-emerald-300 to-sky-400 after:content-[''] after:absolute after:inset-0 after:outline after:outline-2 after:-outline-offset-2 after:rounded-full after:outline-gray-950/30">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-20 rounded-full after:content-[''] after:absolute after:inset-0 after:outline after:outline-2 after:-outline-offset-2 after:rounded-full after:outline-gray-950/30">
+                                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-300 to-sky-400 -z-20 animate-ping [animation-duration:2s]" />
+                                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-300 to-sky-400 -z-10" />
                                 <Image
                                     src={smileMemoji}
                                     alt="Smiling Memoji"
