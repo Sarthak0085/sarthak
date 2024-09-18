@@ -5,10 +5,11 @@ import grainImage from "@/assets/images/grain.jpg";
 import StarIcon from "@/assets/icons/star.svg";
 import SparkleIcon from "@/assets/icons/sparkle.svg";
 import { HeroOrbit } from "@/components/hero-orbit";
+import Link from "next/link";
 
 export const HeroSection = () => {
     return (
-        <div className="py-32 md:py-48 lg:py-60 relative z-0 overflow-x-clip">
+        <section id="home" className="py-32 md:py-48 lg:py-60 relative z-0 overflow-x-clip">
             <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_70%,transparent)]">
                 <div className="absolute inset-0 -z-30 opacity-5"
                     style={{ backgroundImage: `url(${grainImage.src})` }}
@@ -121,16 +122,16 @@ export const HeroSection = () => {
                     </p>
                 </div>
                 <div className="flex flex-col md:flex-row justify-center items-center mt-8 gap-4">
-                    <button className="inline-flex items-center gap-2 border border-white/15 px-6 h-12 rounded-xl">
-                        <span className="font-semibold">Explore My Work</span>
-                        <ArrowDown className="size-4" />
-                    </button>
+                    <Link href={`#projects`} className="inline-flex items-center gap-2 border border-white/15 px-6 h-12 rounded-xl">
+                        <span className="font-semibold cursor-pointer">Explore My Work</span>
+                        <ArrowDown className="size-4 cursor-pointer" />
+                    </Link>
                     <button className="inline-flex items-center gap-2 border border-white bg-white text-gray-900 px-6 h-12 rounded-xl">
                         <span>👋</span>
                         <span className="font-semibold">Let&apos;s Connect</span>
                     </button>
                 </div>
             </div>
-        </div>
+        </section>
     )
 }

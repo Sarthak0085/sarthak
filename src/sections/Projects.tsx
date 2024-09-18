@@ -49,7 +49,7 @@ const portfolioProjects = [
 
 export const ProjectsSection = () => {
     return (
-        <section className="py-16 lg:py-24">
+        <section id="projects" className="py-16 lg:py-24">
             <div className="container">
                 <SectionHeader
                     header={"Real-World Projects"}

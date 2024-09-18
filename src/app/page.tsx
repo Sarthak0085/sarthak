@@ -1,3 +1,7 @@
+"use client";
+
+import { Header } from "@/components/header";
+import { StarIndicator } from "@/components/star-indicator";
 import { AboutSection } from "@/sections/about";
 import { ContactSection } from "@/sections/contact";
 import { Footer } from "@/sections/footer";
@@ -9,11 +13,13 @@ import { TestimonialsSection } from "@/sections/testimonials";
 export default function Home() {
   return (
     <div>
+      <StarIndicator />
+      <Header />
       <HeroSection />
+      <AboutSection />
       <ProjectsSection />
       <TapeSection />
       <TestimonialsSection />
-      <AboutSection />
       <ContactSection />
       <Footer />
     </div>
