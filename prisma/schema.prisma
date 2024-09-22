@@ -68,10 +68,10 @@ model Hobby {
 }
 
 model HobbyDetail {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
   name    String
-  hobbyId String @db.ObjectId
-  Hobby   Hobby  @relation(fields: [hobbyId], references: [id], onDelete: Cascade)
+  hobbyId String? @db.ObjectId
+  Hobby   Hobby?  @relation(fields: [hobbyId], references: [id], onDelete: Cascade)
 }
 
 model Language {
@@ -84,11 +84,11 @@ model Language {
 }
 
 model LanguageDetail {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   svg        String
-  languageId String   @db.ObjectId
-  Language   Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+  languageId String?   @db.ObjectId
+  Language   Language? @relation(fields: [languageId], references: [id], onDelete: Cascade)
 }
 
 model Education {
@@ -102,6 +102,7 @@ model Education {
   percentage  Float?
   cgpa        Float?
   liveLink    String?
+  position    Int?
   portfolioId String     @db.ObjectId
   portfolio   Portfolio? @relation("PortfolioEducations", fields: [portfolioId], references: [id], onDelete: Cascade)
 }
@@ -109,12 +110,14 @@ model Education {
 model Project {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   companyName String?
-  year        String
+  startDate   DateTime
+  endDate     DateTime
   title       String
   description String
   liveLink    String?
   githubLink  String?
   image       String
+  position    Int?
   portfolio   Portfolio? @relation("PortfolioProjects", fields: [portfolioId], references: [id])
   portfolioId String?    @db.ObjectId
 }
