@@ -8,9 +8,10 @@ import { Portfolio } from "./schema";
 interface PreviewSectionProps {
     data: Portfolio | null,
     handleSubmit: () => void;
+    isPending: boolean;
 }
 
-export const PreviewSection = ({ data, handleSubmit }: PreviewSectionProps) => {
+export const PreviewSection = ({ data, isPending, handleSubmit }: PreviewSectionProps) => {
     return (
         <>
             <HeroSection />
@@ -18,7 +19,7 @@ export const PreviewSection = ({ data, handleSubmit }: PreviewSectionProps) => {
             <ProjectsSection />
             <TapeSection />
             <TestimonialsSection />
-            <button onClick={handleSubmit} className='bg-blue-500 text-white px-4 py-2 rounded'>
+            <button disabled={isPending} onClick={handleSubmit} className='bg-blue-500 text-white px-4 py-2 rounded'>
                 Submit
             </button>
         </>

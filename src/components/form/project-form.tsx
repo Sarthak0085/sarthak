@@ -19,7 +19,7 @@ export const ProjectForm = ({ project, setData, position, setActive }: ProjectFo
             id: project?.id ?? undefined,
             title: project?.title ?? "",
             description: project?.description ?? "",
-            startDate: project?.startDate ?? new Date(),
+            startDate: project?.startDate,
             endDate: project?.endDate ?? undefined,
             image: project?.image ?? "",
             githubLink: project?.githubLink ?? "",

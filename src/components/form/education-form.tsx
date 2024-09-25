@@ -7,10 +7,9 @@ interface EducationFormProps {
     education: z.infer<typeof EducationSchema> | null;
     setData: React.Dispatch<React.SetStateAction<Portfolio>>;
     position: number;
-    setActive: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const EducationForm = ({ education, setData, position, setActive }: EducationFormProps) => {
+export const EducationForm = ({ education, setData, position }: EducationFormProps) => {
     const form = useForm<z.infer<typeof EducationSchema>>({
         resolver: zodResolver(EducationSchema),
         defaultValues: {
@@ -18,7 +17,7 @@ export const EducationForm = ({ education, setData, position, setActive }: Educa
             degree: education?.degree ?? "",
             field: education?.field ?? "",
             institution: education?.institution ?? "",
-            startDate: education?.startDate ?? new Date(),
+            startDate: education?.startDate,
             endDate: education?.endDate ?? undefined,
             position: education?.position ?? position,
             description: education?.description ?? "",
@@ -34,10 +33,9 @@ export const EducationForm = ({ education, setData, position, setActive }: Educa
         setData((prev) => ({
             ...prev,
             educations: prev.educations.map(item =>
-                item.id === values?.id ? { ...item, ...values } : item
+                item.id === values?.id ? { ...item, ...values, cgpa: Number(values?.cgpa), percentage: Number(values?.percentage) } : item
             )
         }));
-        setActive(prev => prev + 1);
     }
 
     return (
@@ -93,27 +91,25 @@ export const EducationForm = ({ education, setData, position, setActive }: Educa
                         render={({ field }) => (
                             <input
                                 {...field}
-                                type="date"
+                                type="text"
+                                placeholder="20-08-2019 (Type date in this format)"
                                 className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                                onChange={(e) => field.onChange(new Date(e.target.value))}
                             />
                         )}
                     />
                     {form.formState.errors.startDate && <p className="text-red-600 text-sm">{form.formState.errors.startDate.message}</p>}
                 </div>
                 <div className='mb-5'>
-                    <label htmlFor="startDate">End Date</label>
+                    <label htmlFor="endDate">End Date</label>
                     <Controller
                         name="endDate"
                         control={form.control}
                         render={({ field }) => (
                             <input
                                 {...field}
-                                type="date"
+                                type="text"
+                                placeholder="20-08-2020 (Type date in this format)"
                                 className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                                onChange={(e) => field.onChange(new Date(e.target.value))}
                             />
                         )}
                     />
@@ -146,6 +142,9 @@ export const EducationForm = ({ education, setData, position, setActive }: Educa
                             <input
                                 {...field}
                                 type="number"
+                                step="0.01"
+                                min={0}
+                                max={100}
                                 placeholder="Enter percentage"
                                 className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
@@ -165,7 +164,9 @@ export const EducationForm = ({ education, setData, position, setActive }: Educa
                             <input
                                 {...field}
                                 type="number"
-                                step="0.01" // Allows decimal input
+                                step="0.01"
+                                min={0}
+                                max={10}
                                 placeholder="Enter CGPA"
                                 className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
@@ -193,14 +194,9 @@ export const EducationForm = ({ education, setData, position, setActive }: Educa
                         <p className="text-red-600 text-sm">{form.formState.errors.liveLink.message}</p>
                     )}
                 </div>
-                <div className='flex items-center justify-between'>
-                    <button onClick={() => setActive(prev => prev - 1)} className='bg-blue-500 text-white px-4 py-2 rounded'>
-                        <span className="mr-2">&#9664;</span>
-                        Prev
-                    </button>
-                    <button type='submit' className='bg-blue-500 text-white px-4 py-2 rounded'>
-                        Next
-                        <span className="mr-2">&#9654;</span>
+                <div className='flex items-center justify-end'>
+                    <button type='submit' className='bg-emerald-500 text-white px-4 py-2 rounded'>
+                        Save
                     </button>
                 </div>
             </form>

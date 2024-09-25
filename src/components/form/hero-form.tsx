@@ -40,7 +40,7 @@ export const HeroSectionForm = ({
     }
     return (
         <div className='w-full mx-auto mt-16'>
-            <div className="min-w-[400px] max-w-lg mx-auto p-6">
+            <div className="w-full sm:min-w-[400px] max-w-lg mx-auto p-6">
                 <h1 className="text-2xl font-bold mb-4">Hero Section</h1>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className='mb-5'>

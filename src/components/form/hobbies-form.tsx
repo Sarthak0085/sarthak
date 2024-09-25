@@ -37,7 +37,9 @@ export const HobbiesSectionForm = ({ control, errors }: HobbiesSectionProps) => 
                     {errors.hobby?.title && <p className="text-red-600 text-sm">{errors.hobby?.title?.message}</p>}
                 </div>
                 <div className="mb-2">
-                    <label className="block text-sm font-medium text-gray-200">Description</label>
+                    <label className="block text-sm font-medium text-gray-200">
+                        Description <span className="text-red-500">*</span>
+                    </label>
                     <Controller
                         name={`hobby.description`}
                         control={control}
@@ -50,7 +52,6 @@ export const HobbiesSectionForm = ({ control, errors }: HobbiesSectionProps) => 
                     />
                     {errors.hobby?.description && <p className="text-red-600 text-sm">{errors.hobby?.description?.message}</p>}
                 </div>
-
                 <div>
                     {fields.map((field, index) => (
                         <>
@@ -70,15 +71,14 @@ export const HobbiesSectionForm = ({ control, errors }: HobbiesSectionProps) => 
                                 />
                                 {errors.hobby?.title && <p className="text-red-600 text-sm">{errors.hobby?.title?.message}</p>}
                             </div>
-                            <button type="button" onClick={() => remove(index)} className="text-red-500 hover:underline">
+                            <button onClick={() => remove(index)} className="mt-1 block text-red-500 hover:underline">
                                 Remove Hobby
                             </button>
                         </>
                     ))}
                     <button
-                        type="button"
                         onClick={() => append({ name: '', hobbyId: '' })}
-                        className="mb-4 text-blue-500 hover:underline"
+                        className="mb-4 block mt-2 text-blue-500 hover:underline"
                     >
                         Add Hobby
                     </button>

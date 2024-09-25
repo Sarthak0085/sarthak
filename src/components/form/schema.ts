@@ -17,7 +17,7 @@ export const ReadSchema = z.object({
 export const HobbyDetailSchema = z.object({
     id: z.string().length(24, "ID must be 24 characters long").optional(),
     name: z.string().min(1, "Name is required"),
-    hobbyId: z.string().length(24, "Hobby ID must be 24 characters long"),
+    hobbyId: z.string().length(24, "Hobby ID must be 24 characters long").optional(),
 });
 
 export const HobbySchema = z.object({
@@ -31,14 +31,14 @@ export const LanguageDetailSchema = z.object({
     id: z.string().length(24, "ID must be 24 characters long").optional(),
     name: z.string().min(1, "Name is required"),
     svg: z.string(),
-    languageId: z.string().length(24, "Language ID must be 24 characters long"),
+    languageId: z.string().optional()
 });
 
 export const LanguageSchema = z.object({
     id: z.string().length(24, "ID must be 24 characters long").optional(),
     title: z.string().min(1, "Title is required"),
     description: z.string().optional(),
-    languages: z.array(LanguageDetailSchema).optional(),
+    languages: z.array(LanguageDetailSchema),
 });
 
 export const AboutSectionSchema = z.object({
@@ -75,8 +75,8 @@ export const EducationSchema = z.object({
     institution: z.string().min(1, "Institution is required"),
     degree: z.string().min(1, "Degree is required"),
     field: z.string().min(1, "Field is required"),
-    startDate: z.date(),
-    endDate: z.date().optional(),
+    startDate: z.string(),
+    endDate: z.string().optional(),
     position: z.number().optional(),
     description: z.string().optional(),
     percentage: z.number().optional(),
@@ -84,7 +84,7 @@ export const EducationSchema = z.object({
     liveLink: z.string().url().optional(),
     portfolioId: z.string().optional(),
 }).refine((data) => {
-    if (data.endDate && data.endDate < data.startDate) {
+    if (data.endDate && Number(data.endDate) < Number(data.startDate)) {
         return false;
     }
     return true;
@@ -94,6 +94,7 @@ export const EducationSchema = z.object({
 });
 
 export const PortfolioSchema = z.object({
+    id: z.string().optional(),
     hero: Heroschema,
     about: AboutSectionSchema,
     educations: z.array(EducationSchema),

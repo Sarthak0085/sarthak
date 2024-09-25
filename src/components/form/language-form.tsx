@@ -42,6 +42,7 @@ export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) =>
                         render={({ field }) => (
                             <input
                                 {...field}
+                                placeholder="Enter language title"
                                 className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         )}
@@ -56,6 +57,8 @@ export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) =>
                         render={({ field }) => (
                             <textarea
                                 {...field}
+                                placeholder="Enter language description"
+                                rows={4}
                                 className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         )}
@@ -75,6 +78,7 @@ export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) =>
                                     render={({ field }) => (
                                         <input
                                             {...field}
+                                            placeholder="Enter language name"
                                             className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                     )}
@@ -92,6 +96,7 @@ export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) =>
                                         <input
                                             type="text"
                                             placeholder="Enter SVG URL"
+                                            value={svgPreviews[index] as string ?? ""}
                                             onChange={(e) => {
                                                 onChange(e.target.value);
                                                 setSvgPreviews(prev => ({ ...prev, [index]: e.target.value }));
@@ -131,7 +136,7 @@ export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) =>
                                     </picture>
                                 )}
                             </div>
-                            <button type="button" onClick={() => remove(index)} className="my-1 text-red-500 hover:underline">
+                            <button type="button" onClick={() => remove(index)} className="my-1 block text-red-500 hover:underline">
                                 Remove
                             </button>
                         </>
@@ -139,7 +144,7 @@ export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) =>
                     <button
                         type="button"
                         onClick={() => append({ name: '', svg: '', languageId: '' })}
-                        className="my-4 text-blue-500 hover:underline"
+                        className="my-4 block text-blue-500 hover:underline"
                     >
                         Add
                     </button>

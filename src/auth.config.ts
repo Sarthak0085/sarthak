@@ -8,4 +8,4 @@ export default {
             clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
         })
     ]
-} satisfies NextAuthConfig
+} satisfies NextAuthConfig;

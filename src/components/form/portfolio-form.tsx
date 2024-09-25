@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { HeroSectionForm } from "./hero-form";
 import { AboutSectionForm } from "./about-form";
 import { EducationManager } from "./education-manager";
@@ -8,14 +8,17 @@ import { z } from "zod";
 import { PortfolioSchema } from "./schema";
 import { ProjectsManager } from "./projects-manager ";
 import { PreviewSection } from "./preview-section";
+import { createPortfolio } from "@/actions/create-portfolio";
 
 interface PortfolioFormProps {
-    portfolio: z.infer<typeof PortfolioSchema> | null;
+    portfolio?: z.infer<typeof PortfolioSchema> | null;
 }
 
 export const PortfolioForm = ({ portfolio }: PortfolioFormProps) => {
+    const [isPending, startTransition] = useTransition();
     const [active, setActive] = useState(0);
     const [data, setData] = useState<z.infer<typeof PortfolioSchema>>({
+        id: portfolio?.id ?? undefined,
         hero: {
             id: portfolio?.hero.id ?? undefined,
             title: portfolio?.hero?.title ?? "",
@@ -37,7 +40,7 @@ export const PortfolioForm = ({ portfolio }: PortfolioFormProps) => {
                     id: hobby?.id ?? undefined,
                     name: hobby.name ?? "",
                     hobbyId: hobby?.hobbyId ?? hobby?.id,
-                }))
+                })) ?? [],
             },
             language: {
                 id: portfolio?.about?.language?.id ?? undefined,
@@ -47,8 +50,8 @@ export const PortfolioForm = ({ portfolio }: PortfolioFormProps) => {
                     id: language?.id ?? undefined,
                     name: language.name ?? "",
                     svg: language?.svg ?? "",
-                    languageId: language?.languageId ?? language?.id,
-                }))
+                    languageId: language?.languageId ?? undefined,
+                })) ?? []
             },
         },
         educations: portfolio?.educations?.map((education) => ({
@@ -82,6 +85,13 @@ export const PortfolioForm = ({ portfolio }: PortfolioFormProps) => {
 
     const handleSubmit = () => {
         console.log("Dtaa", data);
+        startTransition(() => {
+            createPortfolio(data).then((data) => {
+                if (data?.success) {
+                    alert(data?.success);
+                }
+            }).catch((error) => { console.error(error) });
+        });
     }
 
     return (
@@ -90,7 +100,7 @@ export const PortfolioForm = ({ portfolio }: PortfolioFormProps) => {
             {active === 1 && <AboutSectionForm data={data} setData={setData} setActive={setActive} />}
             {active === 2 && <EducationManager data={data} setData={setData} setActive={setActive} />}
             {active === 3 && <ProjectsManager data={data} setData={setData} setActive={setActive} />}
-            {active === 4 && <PreviewSection data={data} handleSubmit={handleSubmit} />}
+            {active === 4 && <PreviewSection data={data} handleSubmit={handleSubmit} isPending={isPending} />}
         </>
     )
 }

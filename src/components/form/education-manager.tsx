@@ -48,7 +48,7 @@ export const EducationManager = ({ data, setData, setActive }: EducationManagerP
     };
 
     return (
-        <div className='w-full mx-auto mt-16'>
+        <div className='w-full mx-auto my-16'>
             <div className="flex justify-between items-center mb-4">
                 <button
                     className="bg-blue-500 text-white px-4 py-2 rounded ml-auto"
@@ -88,12 +88,20 @@ export const EducationManager = ({ data, setData, setActive }: EducationManagerP
                             education={section?.education}
                             setData={setData}
                             position={educations?.length}
-                            setActive={setActive}
                         />
                     )}
-
                 </div>
             ))}
+            <div className='flex items-center justify-between px-12'>
+                <button onClick={() => setActive(prev => prev - 1)} className='bg-blue-500 text-white px-4 py-2 rounded'>
+                    <span className="mr-2">&#9664;</span>
+                    Prev
+                </button>
+                <button onClick={() => setActive(prev => prev + 1)} className='bg-blue-500 text-white px-4 py-2 rounded'>
+                    Next
+                    <span className="ml-2">&#9654;</span>
+                </button>
+            </div>
         </div>
     )
 }

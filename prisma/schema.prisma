@@ -14,10 +14,33 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  email     String     @unique
-  password  String
-  portfolio Portfolio? @relation(fields: [id], references: [userId])
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String     @unique
+  emailVerified DateTime?
+  image         String?
+  portfolio     Portfolio? @relation(fields: [id], references: [userId])
+  accounts      Account[]
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @map("user_id") @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Portfolio {
@@ -34,13 +57,13 @@ model Hero {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
-  portfolioId String     @db.ObjectId
+  portfolioId String?    @db.ObjectId
   Portfolio   Portfolio? @relation("PortfolioHeroSection")
 }
 
 model AboutSection {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  portfolioId String     @db.ObjectId
+  portfolioId String?    @db.ObjectId
   Portfolio   Portfolio? @relation("PortfolioAboutSection")
   read        Read       @relation("AboutReadSection", fields: [readId], references: [id], onDelete: Cascade)
   readId      String     @unique @db.ObjectId
@@ -75,12 +98,11 @@ model HobbyDetail {
 }
 
 model Language {
-  id             String           @id @default(auto()) @map("_id") @db.ObjectId
-  title          String
-  description    String
-  languages      LanguageDetail[]
-  aboutSectionId String           @db.ObjectId
-  aboutSection   AboutSection?    @relation("AboutSectionLanguages")
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  languages    LanguageDetail[]
+  aboutSection AboutSection?    @relation("AboutSectionLanguages")
 }
 
 model LanguageDetail {
@@ -103,7 +125,7 @@ model Education {
   cgpa        Float?
   liveLink    String?
   position    Int?
-  portfolioId String     @db.ObjectId
+  portfolioId String?    @db.ObjectId
   portfolio   Portfolio? @relation("PortfolioEducations", fields: [portfolioId], references: [id], onDelete: Cascade)
 }
 
