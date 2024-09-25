@@ -3,11 +3,14 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 
-export const getPortfolio = async () => {
+export const getPortfolio = async (userId: string) => {
     try {
         const session = await auth();
         if (!session || !session?.user || !session?.user?.id) {
             throw new Error("UnAuthorized. Please login to access this");
+        }
+        if (userId !== session?.user?.id) {
+            throw new Error("Forbidden. You are not allowed to do this.")
         }
         const portfolio = await db.portfolio.findUnique({
             where: {
@@ -37,6 +40,8 @@ export const getPortfolio = async () => {
 
         return { portfolio };
     } catch (error) {
-        return null;
+        return {
+            error: error
+        };
     }
 }

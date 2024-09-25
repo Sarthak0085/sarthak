@@ -4,6 +4,7 @@ export const Heroschema = z.object({
     id: z.string().min(24, { message: "Id must be 24 characters long" }).optional(),
     title: z.string().min(1, { message: "Title is required" }),
     description: z.string().min(10, { message: "Description must be at least 10 characters long" }),
+    portfolioId: z.string().optional(),
 });
 
 
@@ -43,6 +44,7 @@ export const LanguageSchema = z.object({
 
 export const AboutSectionSchema = z.object({
     id: z.string().length(24, "ID must be 24 characters long").optional(),
+    portfolioId: z.string().optional(),
     read: ReadSchema,
     hobby: HobbySchema,
     language: LanguageSchema,
@@ -55,10 +57,10 @@ export const ProjectSchema = z.object({
     endDate: z.date().optional(),
     title: z.string().min(1, "Title is required"),
     description: z.string().min(1, "Description is required"),
-    liveLink: z.string().url().optional(),
     position: z.number().optional(),
-    githubLink: z.string().url().optional(),
     image: z.string().min(1, "Image URL is required"),
+    githubLink: z.string().url().optional(),
+    liveLink: z.string().url().optional(),
     portfolioId: z.string().optional(),
 }).refine((data) => {
     if (data.endDate && data.endDate < data.startDate) {
@@ -79,8 +81,8 @@ export const EducationSchema = z.object({
     endDate: z.string().optional(),
     position: z.number().optional(),
     description: z.string().optional(),
-    percentage: z.number().optional(),
-    cgpa: z.number().optional(),
+    percentage: z.string().optional(),
+    cgpa: z.string().max(10, { message: "CGPA must not greater than 10" }).optional(),
     liveLink: z.string().url().optional(),
     portfolioId: z.string().optional(),
 }).refine((data) => {

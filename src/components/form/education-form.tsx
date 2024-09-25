@@ -7,9 +7,10 @@ interface EducationFormProps {
     education: z.infer<typeof EducationSchema> | null;
     setData: React.Dispatch<React.SetStateAction<Portfolio>>;
     position: number;
+    id?: string;
 }
 
-export const EducationForm = ({ education, setData, position }: EducationFormProps) => {
+export const EducationForm = ({ education, setData, position, id }: EducationFormProps) => {
     const form = useForm<z.infer<typeof EducationSchema>>({
         resolver: zodResolver(EducationSchema),
         defaultValues: {
@@ -30,12 +31,23 @@ export const EducationForm = ({ education, setData, position }: EducationFormPro
 
     const onSubmit = (values: z.infer<typeof EducationSchema>) => {
         console.log("education", values);
-        setData((prev) => ({
-            ...prev,
-            educations: prev.educations.map(item =>
-                item.id === values?.id ? { ...item, ...values, cgpa: Number(values?.cgpa), percentage: Number(values?.percentage) } : item
-            )
-        }));
+        setData((prev) => {
+            if (id === education?.id) {
+                console.log("id", id)
+                return {
+                    ...prev,
+                    educations: prev.educations.map(item =>
+                        item.id === id ? { ...item, ...values } : item
+                    )
+                };
+            } else {
+                const newId = id
+                return {
+                    ...prev,
+                    educations: [...prev.educations, { id: newId, ...values }]
+                };
+            }
+        });
     }
 
     return (
@@ -91,7 +103,7 @@ export const EducationForm = ({ education, setData, position }: EducationFormPro
                         render={({ field }) => (
                             <input
                                 {...field}
-                                type="text"
+                                type="date"
                                 placeholder="20-08-2019 (Type date in this format)"
                                 className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
@@ -107,7 +119,7 @@ export const EducationForm = ({ education, setData, position }: EducationFormPro
                         render={({ field }) => (
                             <input
                                 {...field}
-                                type="text"
+                                type="date"
                                 placeholder="20-08-2020 (Type date in this format)"
                                 className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
@@ -141,11 +153,10 @@ export const EducationForm = ({ education, setData, position }: EducationFormPro
                         render={({ field }) => (
                             <input
                                 {...field}
-                                type="number"
-                                step="0.01"
-                                min={0}
-                                max={100}
-                                placeholder="Enter percentage"
+                                type="text"
+                                inputMode="decimal"
+                                pattern="^(100(\.0{1,2})?|[0-9]{1,2}(\.[0-9]{1,2})?)?$"
+                                title="Enter percentage (0.00 to 100.00)"
                                 className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         )}
@@ -163,11 +174,11 @@ export const EducationForm = ({ education, setData, position }: EducationFormPro
                         render={({ field }) => (
                             <input
                                 {...field}
-                                type="number"
-                                step="0.01"
-                                min={0}
+                                type="text"
+                                inputMode="decimal"
+                                pattern="^(10(\.0{1,2})?|[0-9]{1}[0-9]?(\.[0-9]{1,2})?)?$"
                                 max={10}
-                                placeholder="Enter CGPA"
+                                placeholder="Enter CGPA (0.00 to 10.00)"
                                 className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         )}
@@ -176,7 +187,6 @@ export const EducationForm = ({ education, setData, position }: EducationFormPro
                         <p className="text-red-600 text-sm">{form.formState.errors.cgpa.message}</p>
                     )}
                 </div>
-
                 <div className='mb-5'>
                     <label htmlFor="liveLink">Live Link</label>
                     <Controller

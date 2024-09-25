@@ -1,42 +1,53 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Heroschema, Portfolio } from "./schema";
+import { createOrUpdateHero } from "@/actions/create-portfolio";
 
 interface HeroSectionFormProps {
-    data: Portfolio | null;
-    setData: React.Dispatch<React.SetStateAction<Portfolio>>;
+    data?: Portfolio | null;
+    // setData: React.Dispatch<React.SetStateAction<Portfolio>>;
     setActive: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const HeroSectionForm = ({
     data,
-    setData,
+    // setData,
     setActive
 }: HeroSectionFormProps) => {
+    console.log("data", data);
+    const [isPending, startTransition] = useTransition();
     const { handleSubmit, control, formState: { errors } } = useForm<z.infer<typeof Heroschema>>({
         resolver: zodResolver(Heroschema),
         defaultValues: {
-            id: data?.hero?.id ?? undefined,
+            id: data?.hero?.id,
             title: data?.hero?.title ?? "",
             description: data?.hero?.description ?? "",
+            portfolioId: data?.id,
         }
     });
 
     const onSubmit = (values: z.infer<typeof Heroschema>) => {
         console.log(values);
-        setData((prev) => ({
-            ...prev,
-            hero: {
-                id: values?.id ?? undefined,
-                title: values?.title,
-                description: values?.description,
-            }
-        }));
-        setActive(prev => prev + 1);
+        // setData((prev) => ({
+        //     ...prev,
+        //     hero: {
+        //         id: values?.id ?? undefined,
+        //         title: values?.title,
+        //         description: values?.description,
+        //     }
+        // }));
+        startTransition(() => {
+            createOrUpdateHero(JSON.parse(JSON.stringify(values))).then((data) => {
+                if (data?.success) {
+                    alert(data?.success);
+                    setActive(prev => prev + 1);
+                }
+            }).catch((err) => console.error(err));
+        })
     }
     return (
         <div className='w-full mx-auto mt-16'>
@@ -76,6 +87,7 @@ export const HeroSectionForm = ({
                     </div>
                     <button
                         type="submit"
+                        disabled={isPending}
                         className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         Next <span className="mr-2">&#9654;</span>

@@ -8,10 +8,10 @@ interface ProjectFormProps {
     project: z.infer<typeof ProjectSchema> | null;
     position: number;
     setData: React.Dispatch<React.SetStateAction<Portfolio>>;
-    setActive: React.Dispatch<React.SetStateAction<number>>;
+    id?: string;
 }
 
-export const ProjectForm = ({ project, setData, position, setActive }: ProjectFormProps) => {
+export const ProjectForm = ({ project, setData, position, id }: ProjectFormProps) => {
     const [imagePreview, setImagePreview] = useState<string | null>(project?.image ?? null);
     const form = useForm<z.infer<typeof ProjectSchema>>({
         resolver: zodResolver(ProjectSchema),
@@ -22,9 +22,9 @@ export const ProjectForm = ({ project, setData, position, setActive }: ProjectFo
             startDate: project?.startDate,
             endDate: project?.endDate ?? undefined,
             image: project?.image ?? "",
-            githubLink: project?.githubLink ?? "",
+            githubLink: project?.githubLink ?? undefined,
             position: project?.position ?? position,
-            liveLink: project?.liveLink ?? "",
+            liveLink: project?.liveLink ?? undefined,
             companyName: project?.companyName ?? undefined,
             portfolioId: project?.portfolioId ?? undefined,
         }
@@ -32,13 +32,23 @@ export const ProjectForm = ({ project, setData, position, setActive }: ProjectFo
 
     const onSubmit = (values: z.infer<typeof ProjectSchema>) => {
         console.log("project", values);
-        setData((prev) => ({
-            ...prev,
-            projects: prev.projects.map(item =>
-                item.id === values?.id ? { ...item, ...values } : item
-            )
-        }));
-        setActive(prev => prev + 1);
+        setData((prev) => {
+            if (id === project?.id) {
+                console.log("id", id)
+                return {
+                    ...prev,
+                    projects: prev.projects.map(item =>
+                        item.id === id ? { ...item, ...values } : item
+                    )
+                };
+            } else {
+                const newId = id
+                return {
+                    ...prev,
+                    projects: [...prev.projects, { id: newId, ...values }]
+                };
+            }
+        })
     }
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,9 +91,20 @@ export const ProjectForm = ({ project, setData, position, setActive }: ProjectFo
                                 <img src={imagePreview} alt="Image Preview" className="max-w-full h-auto" />
                             </picture>
                         ) : (
-                            <p className='text-gray-500'>Drag and drop an image here, or click to select</p>
+                            <>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className='hidden'
+                                    onChange={handleImageUpload}
+                                    id="imageInput"
+                                />
+                                <label htmlFor="imageInput" className='cursor-pointer bg-blue-500 text-white  rounded'>
+                                    <p className='text-gray-500'>Drag and drop an image here, or click to select</p>
+                                </label>
+                            </>
                         )}
-                        <input
+                        {/* <input
                             type="file"
                             accept="image/*"
                             className='hidden'
@@ -92,7 +113,7 @@ export const ProjectForm = ({ project, setData, position, setActive }: ProjectFo
                         />
                         <label htmlFor="imageInput" className='mt-2 cursor-pointer bg-blue-500 text-white px-4 py-2 rounded'>
                             Upload Image
-                        </label>
+                        </label> */}
                     </div>
                     {form.formState.errors.image && (
                         <p className="text-red-600 text-sm">{form.formState.errors.image.message}</p>
@@ -198,7 +219,7 @@ export const ProjectForm = ({ project, setData, position, setActive }: ProjectFo
                     )}
                 </div>
                 <div className='mb-5'>
-                    <label htmlFor="lievLink">Live Link</label>
+                    <label htmlFor="liveLink">Live Link</label>
                     <Controller
                         name="liveLink"
                         control={form.control}
@@ -214,14 +235,9 @@ export const ProjectForm = ({ project, setData, position, setActive }: ProjectFo
                         <p className="text-red-600 text-sm">{form.formState.errors.liveLink.message}</p>
                     )}
                 </div>
-                <div className='flex items-center justify-between'>
-                    <button onClick={() => setActive(prev => prev - 1)} className='bg-blue-500 text-white px-4 py-2 rounded'>
-                        <span className="mr-2">&#9664;</span>
-                        Prev
-                    </button>
-                    <button type='submit' className='bg-blue-500 text-white px-4 py-2 rounded'>
-                        Next
-                        <span className="mr-2">&#9654;</span>
+                <div className='flex items-center justify-end'>
+                    <button type='submit' className='bg-emerald-500 text-white px-4 py-2 rounded'>
+                        Save
                     </button>
                 </div>
             </form>

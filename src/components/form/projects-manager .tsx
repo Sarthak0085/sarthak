@@ -48,7 +48,7 @@ export const ProjectsManager = ({ data, setData, setActive }: ProjectsManagerPro
     };
 
     return (
-        <div className='w-full mx-auto mt-16'>
+        <div className='w-full mx-auto my-16'>
             <div className="flex justify-between items-center mb-4">
                 <button
                     className="bg-blue-500 text-white px-4 py-2 rounded ml-auto"
@@ -60,17 +60,9 @@ export const ProjectsManager = ({ data, setData, setActive }: ProjectsManagerPro
             <h2 className="flex items-center justify-center text-2xl font-bold mb-4 logo-style">Project Details</h2>
             {projects.slice().reverse().map((section, index) => (
                 <div key={section.id} className='mb-8 py-6'>
-                    {open[section?.id] && (
-                        <ProjectForm
-                            project={section?.project}
-                            setData={setData}
-                            position={projects?.length}
-                            setActive={setActive}
-                        />
-                    )}
                     <div className={twMerge("w-full flex items-center justify-between mt-1 mb-3 px-4 py-2 rounded-lg", !open[section?.id] && "border border-slate-500")}>
                         {!open[section?.id] && (
-                            <p className="font-Poppins mt-2 text-[18px] text-black dark:text-white">
+                            <p className="font-Poppins mt-2 text-[18px] text-gray-500">
                                 {projects.length - index}. {section?.project?.title ?? "Project 1"}
                             </p>
                         )}
@@ -91,6 +83,14 @@ export const ProjectsManager = ({ data, setData, setActive }: ProjectsManagerPro
                             </button>
                         </div>
                     </div>
+                    {open[section?.id] && (
+                        <ProjectForm
+                            project={section?.project}
+                            setData={setData}
+                            position={projects?.length}
+                            id={section?.id}
+                        />
+                    )}
                 </div>
             ))}
             <div className='flex items-center justify-between px-12'>

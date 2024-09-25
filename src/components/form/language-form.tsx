@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useFieldArray, Controller, Control, FieldErrors } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { useFieldArray, Controller, Control, FieldErrors, UseFormSetValue, UseFormGetValues } from 'react-hook-form';
 import { z } from "zod";
 import { AboutSectionSchema } from './schema';
 
@@ -8,22 +8,59 @@ type schema = z.infer<typeof AboutSectionSchema>;
 interface LanguageSectionForm {
     control: Control<schema>;
     errors: FieldErrors<schema>;
+    setValue: UseFormSetValue<schema>;
+    getValues: UseFormGetValues<schema>;
 }
 
-export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) => {
+export const LanguageSectionForm = ({ control, errors, setValue, getValues }: LanguageSectionForm) => {
     const { fields, append, remove } = useFieldArray({
         control,
         name: "language.languages",
     });
 
-    const [svgPreviews, setSvgPreviews] = useState<{ [key: number]: string | ArrayBuffer | null }>({});
+    const [svgPreviews, setSvgPreviews] = useState<{ [key: number]: string | ArrayBuffer | null }>();
 
-    const handleSvgChange = (index: number, file: File | undefined | null) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setSvgPreviews(prev => ({ ...prev, [index]: reader.result }));
-        };
+    useEffect(() => {
+        const values = getValues();
+        const languages = values.language?.languages || [];
+        const initialPreviews = languages.reduce((acc, lang, index) => {
+            if (lang.svg) acc[index] = lang.svg;
+            return acc;
+        }, {});
+        setSvgPreviews(initialPreviews);
+    }, [getValues]);
+
+    // const handleSvgChange = (index: number, file: File | undefined | null) => {
+    //     const reader = new FileReader();
+    //     reader.onloadend = () => {
+    //         setSvgPreviews(prev => ({ ...prev, [index]: reader.result }));
+    //     };
+    //     if (file) {
+    //         reader.readAsDataURL(file);
+    //     }
+    // };
+
+    const handleSvgUpload = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
         if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setSvgPreviews(prev => ({ ...prev, [index]: reader.result }));
+                setValue(`language.languages.${index}.svg`, reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleDrop = (index: number, event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setSvgPreviews(prev => ({ ...prev, [index]: reader.result }));
+                setValue(`language.languages.${index}.svg`, reader.result as string);
+            };
             reader.readAsDataURL(file);
         }
     };
@@ -87,7 +124,7 @@ export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) =>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-200 mt-4">
-                                    Upload SVG or
+                                    Enter SVG URL or Upload SVG
                                 </label>
                                 <Controller
                                     name={`language.languages.${index}.svg`}
@@ -96,7 +133,7 @@ export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) =>
                                         <input
                                             type="text"
                                             placeholder="Enter SVG URL"
-                                            value={svgPreviews[index] as string ?? ""}
+                                            value={svgPreviews?.[index] as string ?? ""}
                                             onChange={(e) => {
                                                 onChange(e.target.value);
                                                 setSvgPreviews(prev => ({ ...prev, [index]: e.target.value }));
@@ -110,7 +147,31 @@ export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) =>
                                     <span className="mx-2 text-gray-600 dark:text-gray-100 text-sm">OR</span>
                                     <div className="flex-grow border-t border-gray-300"></div>
                                 </div>
-                                <Controller
+                                <div
+                                    className='border-2 border-dashed border-gray-300 rounded-md p-4 text-center'
+                                    onDrop={(e) => handleDrop(index, e)}
+                                    onDragOver={(e) => e.preventDefault()}
+                                >
+                                    {svgPreviews?.[index] ? (
+                                        <picture>
+                                            <img src={svgPreviews[index] as string} alt="Image Preview" className="max-w-full h-auto" />
+                                        </picture>
+                                    ) : (
+                                        <>
+                                            <input
+                                                type="file"
+                                                accept="image/svg+xml"
+                                                className='hidden'
+                                                onChange={(e) => handleSvgUpload(index, e)}
+                                                id="svgInput"
+                                            />
+                                            <label htmlFor="svgInput" className='cursor-pointer bg-blue-500 text-white  rounded'>
+                                                <p className='text-gray-500'>Drag and drop an image here, or click to select</p>
+                                            </label>
+                                        </>
+                                    )}
+                                </div>
+                                {/* <Controller
                                     name={`language.languages.${index}.svg`}
                                     control={control}
                                     render={({ field: { onChange } }) => (
@@ -134,7 +195,7 @@ export const LanguageSectionForm = ({ control, errors }: LanguageSectionForm) =>
                                             className="mt-2 w-24 h-24 object-cover border rounded"
                                         />
                                     </picture>
-                                )}
+                                )} */}
                             </div>
                             <button type="button" onClick={() => remove(index)} className="my-1 block text-red-500 hover:underline">
                                 Remove

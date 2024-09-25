@@ -63,7 +63,7 @@ model Hero {
 
 model AboutSection {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  portfolioId String?    @db.ObjectId
+  portfolioId String?    @unique @db.ObjectId
   Portfolio   Portfolio? @relation("PortfolioAboutSection")
   read        Read       @relation("AboutReadSection", fields: [readId], references: [id], onDelete: Cascade)
   readId      String     @unique @db.ObjectId
@@ -125,7 +125,7 @@ model Education {
   cgpa        Float?
   liveLink    String?
   position    Int?
-  portfolioId String?    @db.ObjectId
+  portfolioId String     @db.ObjectId
   portfolio   Portfolio? @relation("PortfolioEducations", fields: [portfolioId], references: [id], onDelete: Cascade)
 }
 
@@ -141,5 +141,5 @@ model Project {
   image       String
   position    Int?
   portfolio   Portfolio? @relation("PortfolioProjects", fields: [portfolioId], references: [id])
-  portfolioId String?    @db.ObjectId
+  portfolioId String     @db.ObjectId
 }

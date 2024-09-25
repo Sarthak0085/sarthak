@@ -88,6 +88,7 @@ export const EducationManager = ({ data, setData, setActive }: EducationManagerP
                             education={section?.education}
                             setData={setData}
                             position={educations?.length}
+                            id={section?.id}
                         />
                     )}
                 </div>

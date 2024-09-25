@@ -1,29 +1,30 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { startTransition, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AboutSectionSchema, Portfolio } from "./schema";
 import { ReadSectionForm } from "./read-form";
 import { HobbiesSectionForm } from "./hobbies-form";
 import { LanguageSectionForm } from "./language-form";
+import { createOrUpdateAboutSection } from "@/actions/create-portfolio";
 
 interface AboutSectionFormProps {
-    data: Portfolio | null;
-    setData: React.Dispatch<React.SetStateAction<Portfolio>>;
+    data?: Portfolio | null;
     setActive: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const AboutSectionForm = ({
     data,
-    setData,
     setActive
 }: AboutSectionFormProps) => {
     // console.log("data", data);
+    const [isPending, startTransition] = useTransition();
     const { control, handleSubmit, setValue, getValues, formState: { errors } } = useForm<z.infer<typeof AboutSectionSchema>>({
         resolver: zodResolver(AboutSectionSchema),
         defaultValues: {
+            id: data?.about?.id,
             read: {
                 id: data?.about?.read?.id ?? undefined,
                 title: data?.about?.read?.title ?? "",
@@ -56,41 +57,49 @@ export const AboutSectionForm = ({
 
     const onSubmit = (values: z.infer<typeof AboutSectionSchema>) => {
         console.log("values", values);
-        setData((prev) => ({
-            ...prev,
-            about: {
-                id: data?.about?.id,
-                read: {
-                    id: values?.read?.id ?? undefined,
-                    title: values?.read?.title,
-                    description: values?.read?.description,
-                    image: values?.read?.image,
-                },
-                hobby: {
-                    id: data?.about?.hobby?.id ?? undefined,
-                    title: values?.hobby?.title,
-                    description: values?.hobby?.description,
-                    hobbies: values?.hobby?.hobbies?.map((hobby) => ({
-                        id: hobby?.id ?? "",
-                        name: hobby?.name,
-                        hobbyId: hobby?.hobbyId ?? undefined
-                    }))
-                },
-                language: {
-                    id: data?.about?.language?.id ?? undefined,
-                    title: values?.language?.title,
-                    description: values?.language?.description,
-                    languages: values?.language?.languages?.map((language) => ({
-                        id: language?.id ?? undefined,
-                        name: language?.name,
-                        svg: language?.svg,
-                        languageId: language?.languageId ?? undefined,
-                    }))
-                }
-            }
-        }));
+        // setData((prev) => ({
+        //     ...prev,
+        //     about: {
+        //         id: data?.about?.id,
+        //         read: {
+        //             id: values?.read?.id ?? undefined,
+        //             title: values?.read?.title,
+        //             description: values?.read?.description,
+        //             image: values?.read?.image,
+        //         },
+        //         hobby: {
+        //             id: data?.about?.hobby?.id ?? undefined,
+        //             title: values?.hobby?.title,
+        //             description: values?.hobby?.description,
+        //             hobbies: values?.hobby?.hobbies?.map((hobby) => ({
+        //                 id: hobby?.id ?? "",
+        //                 name: hobby?.name,
+        //                 hobbyId: hobby?.hobbyId ?? undefined
+        //             }))
+        //         },
+        //         language: {
+        //             id: data?.about?.language?.id ?? undefined,
+        //             title: values?.language?.title,
+        //             description: values?.language?.description,
+        //             languages: values?.language?.languages?.map((language) => ({
+        //                 id: language?.id ?? undefined,
+        //                 name: language?.name,
+        //                 svg: language?.svg,
+        //                 languageId: language?.languageId ?? undefined,
+        //             }))
+        //         }
+        //     }
+        // }));
         console.log("Data", data);
-        setActive(prev => prev + 1);
+        startTransition(() => {
+            createOrUpdateAboutSection(JSON.parse(JSON.stringify(values)))
+                .then((data) => {
+                    if (data?.success) {
+                        alert(data?.success);
+                        setActive(prev => prev + 1);
+                    }
+                }).catch((err) => console.error(err));
+        })
     }
 
     return (
@@ -100,14 +109,25 @@ export const AboutSectionForm = ({
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <ReadSectionForm control={control} errors={errors} setValue={setValue} getValues={getValues} />
                     <HobbiesSectionForm control={control} errors={errors} />
-                    <LanguageSectionForm control={control} errors={errors} />
-                    <button
-                        // type="submit"
-                        onClick={() => onSubmit(getValues())}
-                        className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        Next
-                    </button>
+                    <LanguageSectionForm control={control} errors={errors} setValue={setValue} getValues={getValues} />
+                    <div className='flex items-center justify-between '>
+                        <button
+                            onClick={() => setActive(prev => prev - 1)}
+                            disabled={isPending}
+                            className='bg-blue-500 text-white px-4 py-2 rounded'
+                        >
+                            <span className="mr-2">&#9664;</span>
+                            Prev
+                        </button>
+                        <button
+                            onClick={() => onSubmit(getValues())}
+                            disabled={isPending}
+                            className='bg-blue-500 text-white px-4 py-2 rounded'
+                        >
+                            Next
+                            <span className="ml-2">&#9654;</span>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
