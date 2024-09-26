@@ -85,13 +85,21 @@ export const HeroSectionForm = ({
                         />
                         {errors.description && <p className="text-red-600 text-sm">{errors.description.message}</p>}
                     </div>
-                    <button
-                        type="submit"
-                        disabled={isPending}
-                        className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        Next <span className="mr-2">&#9654;</span>
-                    </button>
+                    <div className='flex flex-col space-y-4 items-center !justify-self-end'>
+                        <button
+                            type='submit'
+                            disabled={isPending}
+                            className='w-full bg-emerald-500 text-white px-4 py-2 rounded'
+                        >
+                            Save
+                        </button>
+                        <button
+                            onClick={() => setActive(prev => prev + 1)}
+                            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            Next <span className="mr-2">&#9654;</span>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

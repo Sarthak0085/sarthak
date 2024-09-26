@@ -7,12 +7,11 @@ import { twMerge } from "tailwind-merge";
 import { EducationForm } from "./education-form";
 
 interface EducationManagerProps {
-    data: Portfolio | null;
-    setData: React.Dispatch<React.SetStateAction<Portfolio>>;
+    data?: Portfolio | null;
     setActive: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const EducationManager = ({ data, setData, setActive }: EducationManagerProps) => {
+export const EducationManager = ({ data, setActive }: EducationManagerProps) => {
     const [educations, setEducations] = useState<{
         id: string;
         index: number;
@@ -48,8 +47,8 @@ export const EducationManager = ({ data, setData, setActive }: EducationManagerP
     };
 
     return (
-        <div className='w-full mx-auto my-16'>
-            <div className="flex justify-between items-center mb-4">
+        <div className='w-full sm:min-w-[400px] max-w-6xl mx-auto my-16'>
+            <div className="flex justify-between items-center mb-4 mx-4">
                 <button
                     className="bg-blue-500 text-white px-4 py-2 rounded ml-auto"
                     onClick={addNewSection}
@@ -86,7 +85,6 @@ export const EducationManager = ({ data, setData, setActive }: EducationManagerP
                     {open[section?.id] && (
                         <EducationForm
                             education={section?.education}
-                            setData={setData}
                             position={educations?.length}
                             id={section?.id}
                         />

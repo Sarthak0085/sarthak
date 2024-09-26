@@ -3,42 +3,83 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 
-export const getPortfolio = async (userId: string) => {
+export const getPortfolio = async (userId?: string) => {
     try {
+        console.log("userId", userId);
         const session = await auth();
-        if (!session || !session?.user || !session?.user?.id) {
+        if (!session && !userId) {
             throw new Error("UnAuthorized. Please login to access this");
         }
-        if (userId !== session?.user?.id) {
+        if (userId && session && userId !== session?.user?.id) {
             throw new Error("Forbidden. You are not allowed to do this.")
         }
-        const portfolio = await db.portfolio.findUnique({
+        console.log("first pount");
+        const portfolio = await db.portfolio.findFirst({
             where: {
-                userId: session?.user?.id
+                userId: userId ?? session?.user?.id
             },
-            include: {
-                hero: true,
-                about: {
-                    include: {
-                        read: true,
-                        Hobby: {
-                            include: {
-                                hobbies: true
-                            }
-                        },
-                        Language: {
-                            include: {
-                                languages: true
-                            }
-                        }
-                    }
-                },
-                educations: true,
-                projects: true,
+            // include: {
+            //     hero: true,
+            //     about: {
+            //         include: {
+            //             read: true,
+            //             Hobby: {
+            //                 include: {
+            //                     hobbies: true
+            //                 }
+            //             },
+            //             Language: {
+            //                 include: {
+            //                     languages: true
+            //                 }
+            //             }
+            //         }
+            //     },
+            //     educations: true,
+            //     projects: true,
+            // }
+        });
+        console.log("portfolio", portfolio)
+
+
+        const hero = await db.hero.findFirst({
+            where: {
+                portfolioId: portfolio?.id
             }
         });
 
-        return { portfolio };
+        const educations = await db.education?.findMany({
+            where: {
+                portfolioId: portfolio?.id,
+            }
+        });
+
+        const projects = await db.project?.findMany({
+            where: {
+                portfolioId: portfolio?.id,
+            }
+        });
+
+        const about = await db.aboutSection?.findFirst({
+            where: {
+                portfolioId: portfolio?.id,
+            },
+            select: {
+                read: true,
+                language: {
+                    select: {
+                        languages: true,
+                    }
+                },
+                hobby: {
+                    select: {
+                        hobbies: true,
+                    }
+                }
+            }
+        });
+
+        return { data: { hero, portfolio, educations, projects, about } };
     } catch (error) {
         return {
             error: error

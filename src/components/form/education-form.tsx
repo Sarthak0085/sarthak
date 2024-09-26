@@ -1,16 +1,18 @@
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { EducationSchema, Portfolio } from "./schema";
+import { EducationSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTransition } from "react";
+import { createOrUpdateEducationSection } from "@/actions/create-portfolio";
 
 interface EducationFormProps {
     education: z.infer<typeof EducationSchema> | null;
-    setData: React.Dispatch<React.SetStateAction<Portfolio>>;
     position: number;
     id?: string;
 }
 
-export const EducationForm = ({ education, setData, position, id }: EducationFormProps) => {
+export const EducationForm = ({ education, position }: EducationFormProps) => {
+    const [isPending, startTransition] = useTransition();
     const form = useForm<z.infer<typeof EducationSchema>>({
         resolver: zodResolver(EducationSchema),
         defaultValues: {
@@ -31,22 +33,13 @@ export const EducationForm = ({ education, setData, position, id }: EducationFor
 
     const onSubmit = (values: z.infer<typeof EducationSchema>) => {
         console.log("education", values);
-        setData((prev) => {
-            if (id === education?.id) {
-                console.log("id", id)
-                return {
-                    ...prev,
-                    educations: prev.educations.map(item =>
-                        item.id === id ? { ...item, ...values } : item
-                    )
-                };
-            } else {
-                const newId = id
-                return {
-                    ...prev,
-                    educations: [...prev.educations, { id: newId, ...values }]
-                };
-            }
+        startTransition(() => {
+            createOrUpdateEducationSection(JSON.parse(JSON.stringify(values)))
+                .then((data) => {
+                    if (data.success) {
+                        alert(data?.success);
+                    }
+                }).catch(err => console.error(err));
         });
     }
 
@@ -205,7 +198,7 @@ export const EducationForm = ({ education, setData, position, id }: EducationFor
                     )}
                 </div>
                 <div className='flex items-center justify-end'>
-                    <button type='submit' className='bg-emerald-500 text-white px-4 py-2 rounded'>
+                    <button type='submit' disabled={isPending} className='bg-emerald-500 text-white px-4 py-2 rounded'>
                         Save
                     </button>
                 </div>

@@ -1,17 +1,18 @@
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Portfolio, ProjectSchema } from "./schema";
+import { ProjectSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { createOrUpdateProject } from "@/actions/create-portfolio";
 
 interface ProjectFormProps {
     project: z.infer<typeof ProjectSchema> | null;
     position: number;
-    setData: React.Dispatch<React.SetStateAction<Portfolio>>;
     id?: string;
 }
 
-export const ProjectForm = ({ project, setData, position, id }: ProjectFormProps) => {
+export const ProjectForm = ({ project, position, }: ProjectFormProps) => {
+    const [isPending, startTransition] = useTransition();
     const [imagePreview, setImagePreview] = useState<string | null>(project?.image ?? null);
     const form = useForm<z.infer<typeof ProjectSchema>>({
         resolver: zodResolver(ProjectSchema),
@@ -32,23 +33,14 @@ export const ProjectForm = ({ project, setData, position, id }: ProjectFormProps
 
     const onSubmit = (values: z.infer<typeof ProjectSchema>) => {
         console.log("project", values);
-        setData((prev) => {
-            if (id === project?.id) {
-                console.log("id", id)
-                return {
-                    ...prev,
-                    projects: prev.projects.map(item =>
-                        item.id === id ? { ...item, ...values } : item
-                    )
-                };
-            } else {
-                const newId = id
-                return {
-                    ...prev,
-                    projects: [...prev.projects, { id: newId, ...values }]
-                };
-            }
-        })
+        startTransition(() => {
+            createOrUpdateProject(JSON.parse(JSON.stringify(values)))
+                .then((data) => {
+                    if (data.success) {
+                        alert(data?.success);
+                    }
+                }).catch(err => console.error(err));
+        });
     }
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -236,7 +228,7 @@ export const ProjectForm = ({ project, setData, position, id }: ProjectFormProps
                     )}
                 </div>
                 <div className='flex items-center justify-end'>
-                    <button type='submit' className='bg-emerald-500 text-white px-4 py-2 rounded'>
+                    <button type='submit' disabled={isPending} className='bg-emerald-500 text-white px-4 py-2 rounded'>
                         Save
                     </button>
                 </div>

@@ -13,6 +13,7 @@ interface PreviewSectionProps {
 }
 
 export const PreviewSection = ({ data, isPending, handleSubmit, setActive }: PreviewSectionProps) => {
+    console.log("data", data);
     return (
         <div className="mb-16">
             <HeroSection />

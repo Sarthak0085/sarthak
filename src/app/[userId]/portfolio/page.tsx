@@ -7,11 +7,11 @@ interface PortfolioPageProps {
 }
 
 export default async function PortfolioPage({ params }: PortfolioPageProps) {
-    const portfolios = await getPortfolio(params.userId);
-    console.log(portfolios);
-    const portfolio = null;
+    const portfolio = await getPortfolio(params.userId);
+    console.log(portfolio);
+    // const portfolio = null;
 
     return (
-        <PortfolioForm portfolio={portfolio as unknown as Portfolio} />
+        <PortfolioForm portfolio={portfolio?.data as unknown as Portfolio} />
     )
 }

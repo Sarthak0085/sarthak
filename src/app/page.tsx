@@ -1,23 +1,28 @@
-"use client";
-
+import { getPortfolio } from "@/actions/get-portfolio";
+import { CircleFollowingCursor } from "@/components/circle-cursor";
 import { Header } from "@/components/header";
 import { StarIndicator } from "@/components/star-indicator";
 import { AboutSection } from "@/sections/about";
 import { ContactSection } from "@/sections/contact";
+import { EducationsSection } from "@/sections/educations";
 import { Footer } from "@/sections/footer";
 import { HeroSection } from "@/sections/hero";
 import { ProjectsSection } from "@/sections/projects";
 import { TapeSection } from "@/sections/tape";
 import { TestimonialsSection } from "@/sections/testimonials";
 
-export default function Home() {
+export default async function Home() {
+  const portfolioData = await getPortfolio(process.env.USER_ID);
+  console.log("data", portfolioData?.data);
   return (
     <div>
       <StarIndicator />
+      <CircleFollowingCursor />
       <Header />
       <HeroSection />
       <AboutSection />
       <ProjectsSection />
+      <EducationsSection />
       <TapeSection />
       <TestimonialsSection />
       <ContactSection />

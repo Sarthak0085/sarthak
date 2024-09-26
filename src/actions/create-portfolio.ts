@@ -2,7 +2,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { AboutSectionSchema, Heroschema, Portfolio } from "@/components/form/schema";
+import { AboutSectionSchema, EducationSchema, Heroschema, Portfolio, ProjectSchema } from "@/components/form/schema";
 import { db } from "@/lib/db";
 import { deleteImageFromCloudinary, uploadFilesToCloudinary } from "@/lib/helpers";
 import { z } from "zod";
@@ -29,7 +29,7 @@ export const createOrUpdateHero = async (data: z.infer<typeof Heroschema>) => {
         });
 
         if (isPortfolioExists && portfolioId) {
-            const heroExists = await db.hero.findUnique({
+            const heroExists = await db.hero.findFirst({
                 where: {
                     id: id,
                     portfolioId: portfolioId
@@ -53,17 +53,17 @@ export const createOrUpdateHero = async (data: z.infer<typeof Heroschema>) => {
                     success: "Hero Section Updated!!"
                 }
             }
-            await db.hero.create({
-                data: {
-                    title: title,
-                    description: description,
-                    portfolioId: portfolioId,
-                }
-            });
+            // await db.hero.create({
+            //     data: {
+            //         title: title,
+            //         description: description,
+            //         portfolioId: portfolioId,
+            //     }
+            // });
 
-            return {
-                success: "Hero Section Created!!"
-            }
+            // return {
+            //     success: "Hero Section Created!!"
+            // }
         } else {
             const portfolio = await db.portfolio.create({
                 data: {
@@ -268,6 +268,169 @@ export const createOrUpdateAboutSection = async (data: z.infer<typeof AboutSecti
 
             return {
                 success: "About Section created successfully."
+            }
+        }
+
+    } catch (error: any) {
+        throw new Error(error);
+    }
+}
+
+export const createOrUpdateEducationSection = async (data: z.infer<typeof EducationSchema>) => {
+    try {
+        const session = await auth();
+        if (!session?.user || !session?.user?.id) {
+            throw new Error("UnAuthorized. Please login to access this.");
+        }
+        const { id, institution, degree, field, description, startDate, endDate, liveLink, portfolioId, cgpa, percentage, position } = data;
+
+        const isPortfolioExists = await db.portfolio.findFirst({
+            where: {
+                id: portfolioId,
+                userId: session?.user?.id
+            }
+        });
+
+        if (!isPortfolioExists) {
+            throw new Error("Complete previous step first.")
+        }
+
+        const isEducationExist = await db.education.findFirst({
+            where: {
+                portfolioId: isPortfolioExists?.id ?? portfolioId,
+                id: id,
+            }
+        });
+
+        if (isEducationExist) {
+            await db.education.update({
+                where: {
+                    id: isEducationExist?.id
+                },
+                data: {
+                    portfolioId: isPortfolioExists?.id,
+                    degree,
+                    field,
+                    institution,
+                    startDate: new Date(startDate),
+                    endDate: new Date(endDate!) ?? undefined,
+                    description,
+                    position,
+                    percentage: Number(percentage),
+                    cgpa: Number(cgpa),
+                    liveLink
+                }
+            });
+
+            return {
+                success: "Education updated successfully."
+            }
+        } else {
+            await db.education.create({
+                data: {
+                    portfolioId: isPortfolioExists?.id,
+                    degree,
+                    field,
+                    institution,
+                    startDate: new Date(startDate),
+                    endDate: new Date(endDate!) ?? undefined,
+                    description,
+                    position,
+                    percentage: Number(percentage) ?? undefined,
+                    cgpa: Number(cgpa),
+                    liveLink
+                }
+            });
+
+            return {
+                success: "Education created successfully."
+            }
+        }
+
+    } catch (error: any) {
+        throw new Error(error);
+    }
+}
+
+export const createOrUpdateProject = async (data: z.infer<typeof ProjectSchema>) => {
+    try {
+        const session = await auth();
+        if (!session?.user || !session?.user?.id) {
+            throw new Error("UnAuthorized. Please login to access this.");
+        }
+        const { id, title, description, startDate, endDate, liveLink, portfolioId, image, companyName, githubLink, position } = data;
+
+        const isPortfolioExists = await db.portfolio.findFirst({
+            where: {
+                id: portfolioId,
+                userId: session?.user?.id
+            }
+        });
+
+        if (!isPortfolioExists) {
+            throw new Error("Complete previous step first.")
+        }
+
+        const isProjectExist = await db.project.findFirst({
+            where: {
+                portfolioId: isPortfolioExists?.id ?? portfolioId,
+                id: id,
+            }
+        });
+
+        if (isProjectExist) {
+            let result;
+            if (isProjectExist?.image !== image) {
+                await deleteImageFromCloudinary(extractPublicIdFromSvg(isProjectExist?.image));
+                result = await uploadFilesToCloudinary(image, "projects");
+
+                if (!result || !result[0]?.url) {
+                    throw new Error("There is some problem with uploading the file")
+                }
+            }
+            await db.project.update({
+                where: {
+                    id: isProjectExist?.id
+                },
+                data: {
+                    portfolioId: isPortfolioExists?.id,
+                    title,
+                    startDate: new Date(startDate),
+                    endDate: new Date(endDate!) ?? undefined,
+                    description,
+                    position,
+                    image: result[0]?.url ?? isProjectExist?.image,
+                    companyName,
+                    githubLink,
+                    liveLink
+                }
+            });
+
+            return {
+                success: "Project updated successfully."
+            }
+        } else {
+            const result = await uploadFilesToCloudinary(image, "projects");
+            if (!result || !result[0]?.url) {
+                throw new Error("There is some problem with uploading the file")
+            }
+            await db.project.create({
+                data: {
+                    portfolioId: isPortfolioExists?.id,
+                    title,
+                    startDate: new Date(startDate),
+                    endDate: new Date(endDate!) ?? undefined,
+                    description,
+                    position,
+                    image: result[0]?.url,
+                    companyName,
+                    githubLink,
+                    liveLink
+                }
+            });
+
+            return {
+                success: "Project created successfully."
             }
         }
 

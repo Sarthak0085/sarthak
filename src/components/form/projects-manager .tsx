@@ -7,12 +7,11 @@ import { twMerge } from "tailwind-merge";
 import { ProjectForm } from "./project-form";
 
 interface ProjectsManagerProps {
-    data: Portfolio | null;
-    setData: React.Dispatch<React.SetStateAction<Portfolio>>;
+    data?: Portfolio | null;
     setActive: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const ProjectsManager = ({ data, setData, setActive }: ProjectsManagerProps) => {
+export const ProjectsManager = ({ data, setActive }: ProjectsManagerProps) => {
     const [projects, setProjects] = useState<{ id: string, index: number, project: z.infer<typeof ProjectSchema> | null }[]>(
         data?.projects?.map((project: z.infer<typeof ProjectSchema>) => (
             {
@@ -48,8 +47,8 @@ export const ProjectsManager = ({ data, setData, setActive }: ProjectsManagerPro
     };
 
     return (
-        <div className='w-full mx-auto my-16'>
-            <div className="flex justify-between items-center mb-4">
+        <div className='w-full sm:min-w-[400px] max-w-6xl mx-auto my-16'>
+            <div className="flex justify-between items-center mb-4 mx-4">
                 <button
                     className="bg-blue-500 text-white px-4 py-2 rounded ml-auto"
                     onClick={addNewSection}
@@ -86,7 +85,6 @@ export const ProjectsManager = ({ data, setData, setActive }: ProjectsManagerPro
                     {open[section?.id] && (
                         <ProjectForm
                             project={section?.project}
-                            setData={setData}
                             position={projects?.length}
                             id={section?.id}
                         />

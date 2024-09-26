@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { startTransition, useTransition } from "react";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AboutSectionSchema, Portfolio } from "./schema";
@@ -19,7 +19,6 @@ export const AboutSectionForm = ({
     data,
     setActive
 }: AboutSectionFormProps) => {
-    // console.log("data", data);
     const [isPending, startTransition] = useTransition();
     const { control, handleSubmit, setValue, getValues, formState: { errors } } = useForm<z.infer<typeof AboutSectionSchema>>({
         resolver: zodResolver(AboutSectionSchema),
@@ -110,7 +109,12 @@ export const AboutSectionForm = ({
                     <ReadSectionForm control={control} errors={errors} setValue={setValue} getValues={getValues} />
                     <HobbiesSectionForm control={control} errors={errors} />
                     <LanguageSectionForm control={control} errors={errors} setValue={setValue} getValues={getValues} />
-                    <div className='flex items-center justify-between '>
+                    <div className='flex items-center justify-end'>
+                        <button onClick={() => onSubmit(getValues())} disabled={isPending} className='bg-emerald-500 text-white px-4 py-2 rounded'>
+                            Save
+                        </button>
+                    </div>
+                    <div className='flex items-center my-8 justify-between '>
                         <button
                             onClick={() => setActive(prev => prev - 1)}
                             disabled={isPending}
@@ -120,7 +124,7 @@ export const AboutSectionForm = ({
                             Prev
                         </button>
                         <button
-                            onClick={() => onSubmit(getValues())}
+                            onClick={() => setActive(prev => prev + 1)}
                             disabled={isPending}
                             className='bg-blue-500 text-white px-4 py-2 rounded'
                         >
