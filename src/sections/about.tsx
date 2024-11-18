@@ -88,7 +88,7 @@ interface AboutSectionProps {
     data?: z.infer<typeof AboutSectionSchema>;
 }
 
-export const AboutSections = ({ data }: AboutSectionProps) => {
+export const AboutSection = ({ data }: AboutSectionProps) => {
     const constraintRef = useRef(null);
     return (
         <section id="about" className="py-16 lg:py-24">
