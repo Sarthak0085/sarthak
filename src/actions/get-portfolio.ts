@@ -68,12 +68,16 @@ export const getPortfolio = async (userId?: string) => {
                 read: true,
                 language: {
                     select: {
+                        title: true,
+                        description: true,
                         languages: true,
                     }
                 },
                 hobby: {
                     select: {
-                        hobbies: true,
+                        title: true,
+                        description: true,
+                        hobbies: true
                     }
                 }
             }

@@ -8,8 +8,13 @@ import StarIcon from "@/assets/icons/star.svg";
 import SparkleIcon from "@/assets/icons/sparkle.svg";
 import { HeroOrbit } from "@/components/hero-orbit";
 import Link from "next/link";
+import { Hero } from "@prisma/client";
 
-export const HeroSection = () => {
+interface HeroSectionProps {
+    data?: Hero | null;
+}
+
+export const HeroSection = ({ data }: HeroSectionProps) => {
     return (
         <section id="home" className="py-32 md:py-48 lg:py-60 relative z-0 overflow-x-clip">
             <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_70%,transparent)]">
@@ -116,11 +121,13 @@ export const HeroSection = () => {
                 </div>
                 <div className="max-w-lg mx-auto">
                     <h1 className="font-serif text-3xl md:text-5xl text-center mt-8 tracking-wide">
-                        Building Exceptional User Experiences
+                        {data?.title}
+                        {/* - Building Exceptional User Experiences */}
                     </h1>
                     <p className="mt-4 text-center text-white/60 md:text-lg">
-                        I specialize in transforming designs into functional , high performing web applications
-                        Let&apos;s discuss your next project
+                        {data?.description}
+                        {/* - I specialize in transforming designs into functional , high performing web applications
+                        Let&apos;s discuss your next project */}
                     </p>
                 </div>
                 <div className="flex flex-col md:flex-row justify-center items-center mt-8 gap-4">

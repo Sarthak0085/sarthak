@@ -2,7 +2,6 @@
 
 import { Card } from "@/components/card"
 import { SectionHeader } from "@/components/section-header";
-import bookImage from "@/assets/images/book-cover.png";
 import HTMLIcon from "@/assets/icons/html5.svg";
 import JavascriptIcon from "@/assets/icons/square-js.svg";
 import CssIcon from "@/assets/icons/css3.svg";
@@ -16,6 +15,8 @@ import { CardHeader } from "@/components/card-header";
 import { ToolboxItems } from "@/components/toolbox-items";
 import { useRef } from "react";
 import { motion } from "framer-motion";
+import { z } from "zod";
+import { AboutSectionSchema } from "@/components/form/schema";
 
 const toolboxItems = [
     {
@@ -44,46 +45,50 @@ const toolboxItems = [
     },
 ];
 
-const hobbies = [
-    {
-        title: "Reading",
-        emoji: "📚",
-        left: "5%",
-        top: "5%",
-    },
-    {
-        title: "Fitness",
-        emoji: "🏋️‍♂️",
-        left: "50%",
-        top: "5%",
-    },
-    {
-        title: "Music",
-        emoji: "🎵",
-        left: "10%",
-        top: "35%",
-    },
-    {
-        title: "Sleeping",
-        emoji: "😴",
-        left: "35%",
-        top: "40%",
-    },
-    {
-        title: "WatchBinge",
-        emoji: "🎥",
-        left: "70%",
-        top: "45%",
-    },
-    {
-        title: "Gaming",
-        emoji: "🎮",
-        left: "5%",
-        top: "65%",
-    },
-]
+// const hobbies = [
+//     {
+//         title: "Reading",
+//         emoji: "📚",
+//         left: "5%",
+//         top: "5%",
+//     },
+//     {
+//         title: "Fitness",
+//         emoji: "🏋️‍♂️",
+//         left: "50%",
+//         top: "5%",
+//     },
+//     {
+//         title: "Music",
+//         emoji: "🎵",
+//         left: "10%",
+//         top: "35%",
+//     },
+//     {
+//         title: "Sleeping",
+//         emoji: "😴",
+//         left: "35%",
+//         top: "40%",
+//     },
+//     {
+//         title: "WatchBinge",
+//         emoji: "🎥",
+//         left: "70%",
+//         top: "45%",
+//     },
+//     {
+//         title: "Gaming",
+//         emoji: "🎮",
+//         left: "5%",
+//         top: "65%",
+//     },
+// ]
 
-export const AboutSection = () => {
+interface AboutSectionProps {
+    data?: z.infer<typeof AboutSectionSchema>;
+}
+
+export const AboutSections = ({ data }: AboutSectionProps) => {
     const constraintRef = useRef(null);
     return (
         <section id="about" className="py-16 lg:py-24">
@@ -96,18 +101,27 @@ export const AboutSection = () => {
                 <div className="mt-16 flex flex-col gap-8">
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-5 lg:grid-cols-3">
                         <Card className="h-[320px] md:col-span-2 lg:col-span-1">
-                            <CardHeader
+                            {/* <CardHeader
                                 title={"My Reads"}
                                 description={"Explore the books shaping my prespective."}
+                            /> */}
+                            <CardHeader
+                                title={data?.read?.title as string}
+                                description={data?.read?.description as string}
                             />
                             <div className="w-40 mx-auto mt-2 md:mt-0">
-                                <Image src={bookImage} alt="Book Cover" />
+                                {/* <Image src={bookImage} alt="Book Cover" /> */}
+                                <Image src={data?.read?.image as string} alt="Book Cover" width={200} height={200} />
                             </div>
                         </Card>
                         <Card className="h-[320px] md:col-span-3 lg:col-span-2">
-                            <CardHeader
+                            {/* <CardHeader
                                 title={"My Toolbox"}
                                 description={"Explore the technologies and tools I use to craft exceptional digital experiences."}
+                            /> */}
+                            <CardHeader
+                                title={data?.language?.title as string}
+                                description={data?.language?.description as string}
                             />
                             <ToolboxItems
                                 items={toolboxItems}
@@ -122,15 +136,20 @@ export const AboutSection = () => {
                     </div>
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-5 lg:grid-cols-3">
                         <Card className="h-[320px] p-0 flex flex-col md:col-span-3 lg:col-span-2">
-                            <CardHeader
+                            {/* <CardHeader
                                 title={"Beyond the Code"}
                                 description={"Explore my interests and hobbies beyond the digital realm."}
                                 className="px-6 py-6"
+                            /> */}
+                            <CardHeader
+                                title={data?.hobby?.title as string}
+                                description={data?.hobby?.description as string}
+                                className="px-6 py-6"
                             />
                             <div className="relative flex-1" ref={constraintRef}>
-                                {hobbies?.map((hobby) => (
+                                {data?.hobby?.hobbies?.map((hobby) => (
                                     <motion.div
-                                        key={hobby?.title}
+                                        key={hobby?.id}
                                         className="inline-flex gap-2 items-center px-6 bg-gradient-to-r from-emerald-300 to-sky-400 rounded-full py-1.5 absolute"
                                         style={{
                                             left: hobby?.left,
@@ -139,8 +158,8 @@ export const AboutSection = () => {
                                         drag
                                         dragConstraints={constraintRef}
                                     >
-                                        <span className="text-gray-950 font-medium">{hobby?.title}</span>
-                                        <span>{hobby.emoji}</span>
+                                        <span className="text-gray-950 font-medium">{hobby?.name}</span>
+                                        {/* <span>{hobby.emoji}</span> */}
                                     </motion.div>
                                 ))}
                             </div>

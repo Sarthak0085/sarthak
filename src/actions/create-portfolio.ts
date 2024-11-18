@@ -295,14 +295,18 @@ export const createOrUpdateEducationSection = async (data: z.infer<typeof Educat
             throw new Error("Complete previous step first.")
         }
 
-        const isEducationExist = await db.education.findFirst({
-            where: {
-                portfolioId: isPortfolioExists?.id ?? portfolioId,
-                id: id,
-            }
-        });
+        if (id) {
+            const isEducationExist = await db.education.findFirst({
+                where: {
+                    portfolioId: isPortfolioExists?.id ?? portfolioId,
+                    id: id,
+                }
+            });
 
-        if (isEducationExist) {
+            if (!isEducationExist) {
+                throw new Error("Education doesn't exist with given id.")
+            }
+
             await db.education.update({
                 where: {
                     id: isEducationExist?.id

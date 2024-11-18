@@ -18,6 +18,8 @@ export const ReadSchema = z.object({
 export const HobbyDetailSchema = z.object({
     id: z.string().length(24, "ID must be 24 characters long").optional(),
     name: z.string().min(1, "Name is required"),
+    top: z.number(),
+    left: z.number(),
     hobbyId: z.string().length(24, "Hobby ID must be 24 characters long").optional(),
 });
 

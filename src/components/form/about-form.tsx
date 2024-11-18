@@ -37,6 +37,8 @@ export const AboutSectionForm = ({
                 hobbies: data?.about?.hobby?.hobbies?.map((hobby) => ({
                     id: hobby?.id ?? undefined,
                     name: hobby?.name ?? "",
+                    top: hobby?.top ?? 0,
+                    left: hobby?.left ?? 0,
                     hobbyId: hobby?.hobbyId ?? undefined,
                 }))
             },

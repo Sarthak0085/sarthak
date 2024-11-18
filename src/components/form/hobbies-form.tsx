@@ -16,6 +16,8 @@ export const HobbiesSectionForm = ({ control, errors }: HobbiesSectionProps) => 
         name: "hobby.hobbies",
     });
 
+    console.log(fields);
+
     return (
         <div>
             <h2 className="text-lg font-semibold mb-2">Hobbies</h2>
@@ -69,7 +71,28 @@ export const HobbiesSectionForm = ({ control, errors }: HobbiesSectionProps) => 
                                         />
                                     )}
                                 />
+
                                 {errors.hobby?.title && <p className="text-red-600 text-sm">{errors.hobby?.title?.message}</p>}
+                                <Controller
+                                    name={`hobby.hobbies.${index}.top`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <input
+                                            {...field}
+                                            className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    name={`hobby.hobbies.${index}.left`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <input
+                                            {...field}
+                                            className="mt-1 block w-full border bg-gray-600 border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    )}
+                                />
                             </div>
                             <button onClick={() => remove(index)} className="mt-1 block text-red-500 hover:underline">
                                 Remove Hobby
@@ -77,7 +100,7 @@ export const HobbiesSectionForm = ({ control, errors }: HobbiesSectionProps) => 
                         </>
                     ))}
                     <button
-                        onClick={() => append({ name: '', hobbyId: '' })}
+                        onClick={() => append({ name: '', hobbyId: '', top: 0, left: 0 })}
                         className="mb-4 block mt-2 text-blue-500 hover:underline"
                     >
                         Add Hobby

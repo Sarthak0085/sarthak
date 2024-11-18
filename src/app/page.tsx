@@ -2,7 +2,7 @@ import { getPortfolio } from "@/actions/get-portfolio";
 import { CircleFollowingCursor } from "@/components/circle-cursor";
 import { Header } from "@/components/header";
 import { StarIndicator } from "@/components/star-indicator";
-import { AboutSection } from "@/sections/about";
+import { AboutSections } from "@/sections/about";
 import { ContactSection } from "@/sections/contact";
 import { EducationsSection } from "@/sections/educations";
 import { Footer } from "@/sections/footer";
@@ -19,10 +19,10 @@ export default async function Home() {
       <StarIndicator />
       <CircleFollowingCursor />
       <Header />
-      <HeroSection />
-      <AboutSection />
+      <HeroSection data={portfolioData?.data?.hero} />
+      <AboutSections data={portfolioData?.data?.about as any} />
       <ProjectsSection />
-      <EducationsSection />
+      <EducationsSection data={portfolioData?.data?.educations} />
       <TapeSection />
       <TestimonialsSection />
       <ContactSection />

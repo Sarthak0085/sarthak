@@ -94,6 +94,8 @@ model HobbyDetail {
   id      String  @id @default(auto()) @map("_id") @db.ObjectId
   name    String
   hobbyId String? @db.ObjectId
+  top     Int     @default(0)
+  left    Int     @default(0)
   hobby   Hobby?  @relation(fields: [hobbyId], references: [id], onDelete: Cascade)
 }
 
